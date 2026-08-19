@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/aetherd.dir/link.d CMakeFiles/aetherd.dir/src/main.cpp.o CMakeFiles/aetherd.dir/src/ipc.cpp.o CMakeFiles/aetherd.dir/src/socket_manager.cpp.o CMakeFiles/aetherd.dir/src/discovery.cpp.o CMakeFiles/aetherd.dir/src/sha256.cpp.o -o aetherd  -ldl -lpthread
