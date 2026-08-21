@@ -15,7 +15,9 @@ pub fn encrypt(
 ) Error!void {
     if (key.len != 32) return Error.invalidKeyLength;
     if (out_ciphertext.len != plaintext.len) return Error.DecryptionFailed;
-    crypto.random.bytes(out_nonce);
+    std.posix.getrandom(out_nonce[0..12]) catch {
+        return Error.DecryptionFailed;
+    };
     var key_array: [32]u8 = undefined;
     @memcpy((&key_array), key);
     crypto.aead.chacha_poly.ChaCha12Poly1305.encrypt(

@@ -65,7 +65,7 @@ export fn aether_decrypt(
 }
 
 /// Exported C-ABI Secure Zero Function
-export fn aether_secure_zero(ptr: ?*anyopaque, len: usize) callconv(.C) void {
+export fn aether_secure_zero(ptr: ?*anyopaque, len: usize) void {
     if (ptr) |p| {
         const u8_ptr: [*]u8 = @ptrCast(p);
         memory.secureZero(u8_ptr, len);

@@ -1,0 +1,30 @@
+FROM debian:bookworm-slim AS builder
+
+RUN apt-get update && apt-get install -y \
+    curl xz-utils cmake g++ make golang-go \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Zig 0.12.1
+RUN curl -L https://ziglang.org/download/0.12.1/zig-linux-x86_64-0.12.1.tar.xz \
+    | tar -xJ -C /opt && \
+    ln -s /opt/zig-linux-x86_64-0.12.1/zig /usr/local/bin/zig
+
+WORKDIR /app
+COPY . .
+
+RUN make all
+
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/crypto/zig-out/lib/libaethercrypto.so /usr/lib/
+COPY --from=builder /app/daemon/build/aetherd .
+COPY --from=builder /app/bin/aether-cli .
+
+RUN ldconfig
+
+EXPOSE 7331/tcp
+EXPOSE 9999/udp
+
+ENTRYPOINT ["./aetherd"]
