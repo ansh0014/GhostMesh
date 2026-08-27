@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const aead = @import("aead.zig");
 const memory = @import("memory.zig");
 
@@ -19,7 +20,12 @@ export fn aether_encrypt(
     var nonce_buf: [12]u8 = undefined;
     var tag_buf: [16]u8 = undefined;
 
+    // Zig 0.16 requires an Io instance for random generation.
+    var threaded: std.Io.Threaded = .init_single_threaded;
+    const io = threaded.io();
+
     aead.encrypt(
+        io,
         key_slice,
         plaintext_slice,
         &nonce_buf,
@@ -65,7 +71,10 @@ export fn aether_decrypt(
 }
 
 /// Exported C-ABI Secure Zero Function
-export fn aether_secure_zero(ptr: ?*anyopaque, len: usize) void {
+export fn aether_secure_zero(
+    ptr: ?*anyopaque,
+    len: usize,
+) void {
     if (ptr) |p| {
         const u8_ptr: [*]u8 = @ptrCast(p);
         memory.secureZero(u8_ptr, len);
